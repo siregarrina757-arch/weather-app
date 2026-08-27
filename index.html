@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeatherApp - Prakiraan Cuaca</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- ===== NAVBAR ===== -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-cloud-sun"></i> WeatherApp
+            </div>
+            <ul class="nav-links">
+                <li><a class="nav-link active" id="nav-beranda">Beranda</a></li>
+                <li><a class="nav-link" id="nav-tentang">Tentang</a></li>
+                <li><a class="nav-link" id="nav-kontak">Kontak</a></li>
+            </ul>
+        </nav>
+
+        <!-- ===== SEARCH ===== -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="Cari kota, misal: Jakarta" />
+                <button class="btn-search" id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+            </div>
+            <button class="btn-location" id="locationBtn"><i class="fas fa-location-dot"></i> Lokasi Saya</button>
+        </div>
+
+        <!-- ===== WEATHER GRID ===== -->
+        <div class="weather-grid">
+            <!-- KIRI: Cuaca Saat Ini -->
+            <div class="weather-card" id="currentWeather">
+                <div class="city-name">
+                    <span id="cityName">Jakarta</span>
+                    <i class="fas fa-location-dot" style="font-size:16px;color:#60a5fa;"></i>
+                </div>
+                <div class="city-date" id="currentDate">Kamis, 27 Agustus 2026</div>
+
+                <div class="weather-main">
+                    <div>
+                        <div class="weather-icon-big" id="weatherIconBig"><i class="fas fa-cloud-sun"></i></div>
+                        <div class="weather-condition" id="weatherCondition">Berawan</div>
+                    </div>
+                    <div>
+                        <div class="weather-temp" id="weatherTemp">28<sup>°C</sup></div>
+                    </div>
+                </div>
+
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <i class="fas fa-droplet"></i>
+                        <div class="detail-info">
+                            <span class="detail-label">Kelembapan</span>
+                            <span class="detail-value" id="humidity">78%</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-wind"></i>
+                        <div class="detail-info">
+                            <span class="detail-label">Angin</span>
+                            <span class="detail-value" id="windSpeed">12 km/j</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-cloud-rain"></i>
+                        <div class="detail-info">
+                            <span class="detail-label">Curah Hujan</span>
+                            <span class="detail-value" id="rainfall">0.5 mm</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-code"></i>
+                        <div class="detail-info">
+                            <span class="detail-label">Kode Cuaca</span>
+                            <span class="detail-value" id="weatherCode">801</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KANAN: Forecast 7 Hari -->
+            <div class="forecast-section">
+                <div class="forecast-title">
+                    <i class="fas fa-calendar-week"></i> Prakiraan 7 Hari
+                </div>
+                <div class="forecast-list" id="forecastList">
+                    <!-- akan diisi JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== HISTORY ===== -->
+        <div class="history-section">
+            <div class="history-title"><i class="fas fa-clock-rotate-left"></i> Riwayat Pencarian</div>
+            <div class="history-list" id="historyList">
+                <!-- akan diisi JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/weather.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
