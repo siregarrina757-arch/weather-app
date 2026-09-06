@@ -16,89 +16,229 @@
                 <i class="fas fa-cloud-sun"></i> WeatherApp
             </div>
             <ul class="nav-links">
-                <li><a class="nav-link active" id="nav-beranda">Beranda</a></li>
-                <li><a class="nav-link" id="nav-tentang">Tentang</a></li>
-                <li><a class="nav-link" id="nav-kontak">Kontak</a></li>
+                <li><a class="nav-link active" data-page="beranda" id="nav-beranda">Beranda</a></li>
+                <li><a class="nav-link" data-page="tentang" id="nav-tentang">Tentang</a></li>
+                <li><a class="nav-link" data-page="kontak" id="nav-kontak">Kontak</a></li>
             </ul>
         </nav>
 
-        <!-- ===== SEARCH ===== -->
-        <div class="search-section">
-            <div class="search-wrapper">
-                <input type="text" class="search-input" id="searchInput" placeholder="Cari kota, misal: Jakarta" />
-                <button class="btn-search" id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+        <!-- ===== PAGES ===== -->
+        <div class="pages-container">
+            <!-- HALAMAN BERANDA -->
+            <div class="page-content active" id="page-beranda">
+                <!-- SEARCH -->
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Cari kota, misal: Jakarta" />
+                        <button class="btn-search" id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+                    </div>
+                    <button class="btn-location" id="locationBtn"><i class="fas fa-location-dot"></i> Lokasi Saya</button>
+                </div>
+
+                <!-- WEATHER GRID -->
+                <div class="weather-grid">
+                    <!-- KIRI: Cuaca Saat Ini -->
+                    <div class="weather-card" id="currentWeather">
+                        <div class="city-name">
+                            <span id="cityName">Jakarta</span>
+                            <i class="fas fa-location-dot" style="font-size:16px;color:#60a5fa;"></i>
+                        </div>
+                        <div class="city-date" id="currentDate">Kamis, 27 Agustus 2026</div>
+
+                        <div class="weather-main">
+                            <div>
+                                <div class="weather-icon-big" id="weatherIconBig"><i class="fas fa-cloud-sun"></i></div>
+                                <div class="weather-condition" id="weatherCondition">Berawan</div>
+                            </div>
+                            <div>
+                                <div class="weather-temp" id="weatherTemp">28<sup>°C</sup></div>
+                            </div>
+                        </div>
+
+                        <div class="weather-details">
+                            <div class="detail-item">
+                                <i class="fas fa-droplet"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Kelembapan</span>
+                                    <span class="detail-value" id="humidity">78%</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-wind"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Angin</span>
+                                    <span class="detail-value" id="windSpeed">12 km/j</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-cloud-rain"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Curah Hujan</span>
+                                    <span class="detail-value" id="rainfall">0.5 mm</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-code"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Kode Cuaca</span>
+                                    <span class="detail-value" id="weatherCode">801</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KANAN: Forecast 7 Hari -->
+                    <div class="forecast-section">
+                        <div class="forecast-title">
+                            <i class="fas fa-calendar-week"></i> Prakiraan 7 Hari
+                        </div>
+                        <div class="forecast-list" id="forecastList">
+                            <!-- akan diisi JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORY -->
+                <div class="history-section">
+                    <div class="history-title"><i class="fas fa-clock-rotate-left"></i> Riwayat Pencarian</div>
+                    <div class="history-list" id="historyList">
+                        <!-- akan diisi JS -->
+                    </div>
+                </div>
             </div>
-            <button class="btn-location" id="locationBtn"><i class="fas fa-location-dot"></i> Lokasi Saya</button>
-        </div>
 
-        <!-- ===== WEATHER GRID ===== -->
-        <div class="weather-grid">
-            <!-- KIRI: Cuaca Saat Ini -->
-            <div class="weather-card" id="currentWeather">
-                <div class="city-name">
-                    <span id="cityName">Jakarta</span>
-                    <i class="fas fa-location-dot" style="font-size:16px;color:#60a5fa;"></i>
-                </div>
-                <div class="city-date" id="currentDate">Kamis, 27 Agustus 2026</div>
+            <!-- HALAMAN TENTANG -->
+            <div class="page-content" id="page-tentang">
+                <div class="about-section">
+                    <div class="about-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h2>Tentang WeatherApp</h2>
+                    </div>
+                    <div class="about-content">
+                        <div class="about-card">
+                            <i class="fas fa-cloud-sun-rain"></i>
+                            <h3>Aplikasi Prakiraan Cuaca</h3>
+                            <p>WeatherApp adalah aplikasi prakiraan cuaca sederhana yang memberikan informasi cuaca terkini dan prakiraan 7 hari ke depan untuk berbagai kota di Indonesia.</p>
+                        </div>
+                        
+                        <div class="about-card">
+                            <i class="fas fa-city"></i>
+                            <h3>Kota yang Tersedia</h3>
+                            <div class="city-list">
+                                <span class="city-tag">Jakarta</span>
+                                <span class="city-tag">Bandung</span>
+                                <span class="city-tag">Surabaya</span>
+                                <span class="city-tag">Medan</span>
+                                <span class="city-tag">Yogyakarta</span>
+                                <span class="city-tag">Semarang</span>
+                                <span class="city-tag">Makassar</span>
+                                <span class="city-tag">Denpasar</span>
+                            </div>
+                        </div>
 
-                <div class="weather-main">
-                    <div>
-                        <div class="weather-icon-big" id="weatherIconBig"><i class="fas fa-cloud-sun"></i></div>
-                        <div class="weather-condition" id="weatherCondition">Berawan</div>
-                    </div>
-                    <div>
-                        <div class="weather-temp" id="weatherTemp">28<sup>°C</sup></div>
-                    </div>
-                </div>
+                        <div class="about-card">
+                            <i class="fas fa-code"></i>
+                            <h3>Teknologi yang Digunakan</h3>
+                            <ul class="tech-list">
+                                <li><i class="fab fa-html5"></i> HTML5</li>
+                                <li><i class="fab fa-css3-alt"></i> CSS3</li>
+                                <li><i class="fab fa-js"></i> JavaScript</li>
+                                <li><i class="fas fa-font-awesome"></i> Font Awesome Icons</li>
+                            </ul>
+                        </div>
 
-                <div class="weather-details">
-                    <div class="detail-item">
-                        <i class="fas fa-droplet"></i>
-                        <div class="detail-info">
-                            <span class="detail-label">Kelembapan</span>
-                            <span class="detail-value" id="humidity">78%</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-wind"></i>
-                        <div class="detail-info">
-                            <span class="detail-label">Angin</span>
-                            <span class="detail-value" id="windSpeed">12 km/j</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-cloud-rain"></i>
-                        <div class="detail-info">
-                            <span class="detail-label">Curah Hujan</span>
-                            <span class="detail-value" id="rainfall">0.5 mm</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-code"></i>
-                        <div class="detail-info">
-                            <span class="detail-label">Kode Cuaca</span>
-                            <span class="detail-value" id="weatherCode">801</span>
+                        <div class="about-card">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Fitur Utama</h3>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check-circle"></i> Informasi cuaca real-time</li>
+                                <li><i class="fas fa-check-circle"></i> Prakiraan 7 hari</li>
+                                <li><i class="fas fa-check-circle"></i> Pencarian kota</li>
+                                <li><i class="fas fa-check-circle"></i> Riwayat pencarian</li>
+                                <li><i class="fas fa-check-circle"></i> Mode tampilan gelap/terang</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KANAN: Forecast 7 Hari -->
-            <div class="forecast-section">
-                <div class="forecast-title">
-                    <i class="fas fa-calendar-week"></i> Prakiraan 7 Hari
-                </div>
-                <div class="forecast-list" id="forecastList">
-                    <!-- akan diisi JS -->
-                </div>
-            </div>
-        </div>
+            <!-- HALAMAN KONTAK -->
+            <div class="page-content" id="page-kontak">
+                <div class="contact-section">
+                    <div class="contact-header">
+                        <i class="fas fa-envelope"></i>
+                        <h2>Hubungi Kami</h2>
+                        <p>Ada pertanyaan atau saran? Silakan hubungi kami melalui salah satu media di bawah ini.</p>
+                    </div>
+                    
+                    <div class="contact-grid">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3>Email</h3>
+                            <p>support@weatherapp.com</p>
+                            <a href="mailto:support@weatherapp.com" class="contact-btn">
+                                <i class="fas fa-paper-plane"></i> Kirim Email
+                            </a>
+                        </div>
 
-        <!-- ===== HISTORY ===== -->
-        <div class="history-section">
-            <div class="history-title"><i class="fas fa-clock-rotate-left"></i> Riwayat Pencarian</div>
-            <div class="history-list" id="historyList">
-                <!-- akan diisi JS -->
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <h3>WhatsApp</h3>
+                            <p>+62 812-3456-7890</p>
+                            <a href="https://wa.me/6281234567890" target="_blank" class="contact-btn whatsapp">
+                                <i class="fab fa-whatsapp"></i> Chat WhatsApp
+                            </a>
+                        </div>
+
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <h3>Instagram</h3>
+                            <p>@weatherapp_id</p>
+                            <a href="https://instagram.com/weatherapp_id" target="_blank" class="contact-btn instagram">
+                                <i class="fab fa-instagram"></i> Follow Kami
+                            </a>
+                        </div>
+
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <h3>GitHub</h3>
+                            <p>github.com/weatherapp</p>
+                            <a href="https://github.com" target="_blank" class="contact-btn github">
+                                <i class="fab fa-github"></i> Lihat Repo
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Form Kontak -->
+                    <div class="contact-form-container">
+                        <h3><i class="fas fa-pencil-alt"></i> Kirim Pesan</h3>
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="contactName">Nama Lengkap</label>
+                                <input type="text" id="contactName" placeholder="Masukkan nama Anda" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email</label>
+                                <input type="email" id="contactEmail" placeholder="Masukkan email Anda" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMessage">Pesan</label>
+                                <textarea id="contactMessage" rows="4" placeholder="Tulis pesan Anda di sini..." required></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i> Kirim Pesan
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
