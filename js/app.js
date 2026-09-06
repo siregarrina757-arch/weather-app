@@ -1,137 +1,142 @@
 // ============================================================
-//  STATE APLIKASI
+// WEATHER APP - APP.JS
 // ============================================================
 
-let currentCity = 'jakarta';
-let history = ['jakarta', 'bandung', 'surabaya'];
-let isLightMode = false;
-
-// ============================================================
-//  DOM ELEMENTS
-// ============================================================
-
+// ELEMEN DOM
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const locationBtn = document.getElementById('locationBtn');
-const appContainer = document.getElementById('app');
+
+const cityName = document.getElementById('cityName');
+const weatherTemp = document.getElementById('weatherTemp');
+const weatherCondition = document.getElementById('weatherCondition');
+const humidity = document.getElementById('humidity');
+const windSpeed = document.getElementById('windSpeed');
+const rainfall = document.getElementById('rainfall');
+const weatherCode = document.getElementById('weatherCode');
+const weatherIconBig = document.getElementById('weatherIconBig');
+const forecastContainer = document.getElementById('forecastContainer'); // Container untuk 7 hari
+
 
 // ============================================================
-//  FUNGSI UTAMA
+// FUNGSI TAMPILKAN PRAKIRAAN 7 HARI
 // ============================================================
 
-// Update riwayat pencarian
-function updateHistory(cityKey) {
-    // Hapus duplikat
-    history = history.filter((h) => h !== cityKey);
-    // Tambahkan di awal
-    history.unshift(cityKey);
-    // Batasi maksimal 5
-    if (history.length > 5) history.pop();
-    
-    // Render ulang riwayat
-    renderHistory(history);
-}
+function renderForecast(forecastData) {
+    if (!forecastContainer) return;
 
-// Handler untuk klik riwayat (dipanggil dari ui.js)
-window.handleHistoryClick = function(cityKey) {
-    currentCity = cityKey;
-    renderWeather(currentCity);
-    const data = getWeatherData(cityKey);
-    if (data) searchInput.value = data.name;
-    updateHistory(cityKey);
-};
+    forecastContainer.innerHTML = ''; // Bersihkan kontainer lama
 
-// Handler pencarian
-function handleSearch() {
-    const query = searchInput.value.trim();
-    if (!query) {
-        showError('Silakan masukkan nama kota');
-        return;
-    }
-
-    const found = searchCity(query);
-    if (found) {
-        currentCity = found;
-        renderWeather(currentCity);
-        const data = getWeatherData(found);
-        searchInput.value = data.name;
-        updateHistory(found);
-    } else {
-        showError(`Kota "${query}" tidak ditemukan.\nCoba: Jakarta, Bandung, Surabaya, Medan, Yogyakarta`);
-        searchInput.focus();
-        searchInput.select();
-    }
-}
-
-// Handler lokasi saya (simulasi)
-function handleLocation() {
-    // Simulasi: gunakan Jakarta sebagai lokasi default
-    // Di produksi bisa pakai Geolocation API
-    currentCity = 'jakarta';
-    renderWeather(currentCity);
-    searchInput.value = 'Jakarta';
-    updateHistory('jakarta');
-    
-    // Feedback
-    console.log('📍 Lokasi: Jakarta (simulasi)');
-}
-
-// Toggle light/dark mode
-function toggleTheme() {
-    isLightMode = !isLightMode;
-    document.body.classList.toggle('light-mode', isLightMode);
-    
-    // Simpan preferensi ke localStorage
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-}
-
-// Load tema dari localStorage
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        isLightMode = true;
-        document.body.classList.add('light-mode');
-    } else {
-        isLightMode = false;
-        document.body.classList.remove('light-mode');
-    }
-}
-
-// ============================================================
-//  NAVIGATION (UI Only)
-// ============================================================
-
-function setupNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const navMap = {
-        'nav-beranda': '🏠 Beranda',
-        'nav-tentang': 'ℹ️ Tentang',
-        'nav-kontak': '📧 Kontak'
-    };
-
-    navLinks.forEach((link) => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Remove active dari semua
-            navLinks.forEach((l) => l.classList.remove('active'));
-            // Add active ke yang diklik
-            this.classList.add('active');
-            
-            // Tampilkan pesan (UI Only)
-            const id = this.id;
-            const message = navMap[id] || 'Halaman';
-            console.log(`📄 Navigasi: ${message}`);
-            
-            // Bisa ditambahkan alert untuk demo
-            // alert(`Anda berada di halaman: ${message}`);
-        });
+    forecastData.forEach(item => {
+        const itemHTML = `
+            <div class="forecast-item">
+                <span class="day">${item.day}</span>
+                <i class="fas ${item.icon}"></i>
+                <span class="temp">${item.high}° / ${item.low}°</span>
+                <span class="rain">${item.rain}</span>
+            </div>
+        `;
+        forecastContainer.insertAdjacentHTML('beforeend', itemHTML);
     });
 }
 
+
 // ============================================================
-//  INISIALISASI
+// FUNGSI TAMPILKAN CUACA UTAMA
 // ============================================================
 
-function initApp() {
-    console.log('🌤️ WeatherApp - Memulai aplikasi...');
+function showWeather(cityKey) {
+    const data = getWeatherData(cityKey);
+
+    if (!data) {
+        alert('Kota tidak ditemukan!');
+        return;
+    }
+
+    // Update Cuaca Utama (Kiri)
+    if (cityName) cityName.textContent = data.name;
+    if (weatherTemp) weatherTemp.innerHTML = `${data.temp}<sup>°C</sup>`;
+    if (weatherCondition) weatherCondition.textContent = data.condition;
+    if (humidity) humidity.textContent = data.humidity;
+    if (windSpeed) windSpeed.textContent = data.wind;
+    if (rainfall) rainfall.textContent = data.rainfall;
+    if (weatherCode) weatherCode.textContent = data.code;
     
+    if (weatherIconBig) {
+        weatherIconBig.innerHTML = `<i class="fas ${data.icon}"></i>`;
+    }
+
+    // Update Prakiraan 7 Hari (Kanan)
+    if (data.forecast) {
+        renderForecast(data.forecast);
+    }
+
+    console.log('✅ Cuaca ditampilkan:', data.name);
+}
+
+
+// ============================================================
+// LOGIKA PENCARIAN
+// ============================================================
+
+function handleSearch() {
+    const query = searchInput.value.trim();
+
+    if (!query) {
+        alert('Masukkan nama kota!');
+        return;
+    }
+
+    const cityKey = searchCity(query);
+
+    if (cityKey) {
+        const data = getWeatherData(cityKey);
+        showWeather(cityKey);
+        searchInput.value = data.name; // Samakan teks input dengan nama resmi
+    } else {
+        alert(
+            'Kota tidak ditemukan!\n\n' +
+            'Coba cari:\n' +
+            '• Jakarta\n' +
+            '• Bandung\n' +
+            '• Surabaya\n' +
+            '• Medan\n' +
+            '• Yogyakarta'
+        );
+    }
+}
+
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+// Click Tombol Cari
+if (searchBtn) {
+    searchBtn.addEventListener('click', handleSearch);
+}
+
+// Enter pada Input
+if (searchInput) {
+    searchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    });
+}
+
+// Tombol Lokasi Saya
+if (locationBtn) {
+    locationBtn.addEventListener('click', function() {
+        showWeather('jakarta');
+        if (searchInput) searchInput.value = 'Jakarta';
+    });
+}
+
+
+// ============================================================
+// TAMPILKAN DEFAULT
+// ============================================================
+
+showWeather('jakarta');
+console.log('🚀 WeatherApp siap digunakan!');
