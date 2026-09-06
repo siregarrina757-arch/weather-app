@@ -1,162 +1,133 @@
 // ============================================================
-//  DOM ELEMENTS
+// UI.JS - FUNGSI TAMBAHAN UNTUK UI
 // ============================================================
 
-const cityName = document.getElementById('cityName');
-const currentDate = document.getElementById('currentDate');
-const weatherIconBig = document.getElementById('weatherIconBig');
-const weatherCondition = document.getElementById('weatherCondition');
-const weatherTemp = document.getElementById('weatherTemp');
-const humidity = document.getElementById('humidity');
-const windSpeed = document.getElementById('windSpeed');
-const rainfall = document.getElementById('rainfall');
-const weatherCode = document.getElementById('weatherCode');
-const forecastList = document.getElementById('forecastList');
-const historyList = document.getElementById('historyList');
-
 // ============================================================
-//  HELPER FUNCTIONS
+// FUNGSI TOGGLE TEMA (LIGHT/DARK MODE)
 // ============================================================
 
-// Mendapatkan nama hari dalam bahasa Indonesia
-function getDayName(date) {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return days[date.getDay()];
-}
-
-// Format tanggal ke bahasa Indonesia
-function formatDate(date) {
-    const d = new Date(date);
-    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    return `${getDayName(d)}, ${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-// Mendapatkan ikon cuaca berdasarkan kondisi
-function getWeatherIcon(condition) {
-    const iconMap = {
-        'Cerah': 'fa-sun',
-        'Berawan': 'fa-cloud',
-        'Cerah Berawan': 'fa-cloud-sun',
-        'Hujan Ringan': 'fa-cloud-rain',
-        'Hujan': 'fa-cloud-showers-heavy',
-        'Badai': 'fa-bolt',
-        'Kabut': 'fa-smog'
-    };
-    return iconMap[condition] || 'fa-cloud-sun';
-}
-
-// ============================================================
-//  RENDER FUNCTIONS
-// ============================================================
-
-// Render cuaca utama
-function renderWeather(cityKey) {
-    const data = getWeatherData(cityKey);
-    if (!data) {
-        console.error(`Data untuk ${cityKey} tidak ditemukan`);
-        renderWeather('jakarta');
-        return;
-    }
-
-    // Update kota & tanggal
-    cityName.textContent = data.name;
-    currentDate.textContent = formatDate(new Date());
-
-    // Update ikon & kondisi
-    const iconClass = getWeatherIcon(data.condition);
-    weatherIconBig.innerHTML = `<i class="fas ${iconClass}"></i>`;
-    weatherCondition.textContent = data.condition;
-
-    // Update suhu
-    weatherTemp.innerHTML = `${data.temp}<sup>°C</sup>`;
-
-    // Update detail cuaca
-    humidity.textContent = data.humidity;
-    windSpeed.textContent = data.wind;
-    rainfall.textContent = data.rainfall;
-    weatherCode.textContent = data.code;
-
-    // Render forecast
-    renderForecast(data.forecast);
-}
-
-// Render forecast 7 hari
-function renderForecast(forecastData) {
-    if (!forecastData || !Array.isArray(forecastData)) {
-        forecastList.innerHTML = '<p class="text-muted">Data forecast tidak tersedia</p>';
-        return;
-    }
-
-    forecastList.innerHTML = '';
-    forecastData.forEach((f) => {
-        const item = document.createElement('div');
-        item.className = 'forecast-item';
-        
-        // Dapatkan ikon untuk forecast
-        const iconMap = {
-            'fa-sun': 'fa-sun',
-            'fa-cloud-sun': 'fa-cloud-sun',
-            'fa-cloud-rain': 'fa-cloud-rain',
-            'fa-cloud-showers-heavy': 'fa-cloud-showers-heavy',
-            'fa-bolt': 'fa-bolt',
-            'fa-smog': 'fa-smog'
-        };
-        const icon = iconMap[f.icon] || 'fa-cloud-sun';
-        
-        item.innerHTML = `
-            <span class="forecast-day">${f.day}</span>
-            <span class="forecast-icon"><i class="fas ${icon}"></i></span>
-            <div class="forecast-temps">
-                <span class="forecast-temp-high">${f.high}°</span>
-                <span class="forecast-temp-low">${f.low}°</span>
-            </div>
-            <span class="forecast-rain"><i class="fas fa-droplet"></i> ${f.rain}</span>
-        `;
-        forecastList.appendChild(item);
-    });
-}
-
-// Render riwayat pencarian
-function renderHistory(history) {
-    if (!historyList) return;
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
     
-    historyList.innerHTML = '';
-    if (!history || history.length === 0) {
-        historyList.innerHTML = '<span class="text-muted">Belum ada riwayat pencarian</span>';
-        return;
+    // Simpan preferensi ke localStorage
+    const isLightMode = document.body.classList.contains('light-mode');
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    
+    // Update icon jika ada
+    const themeIcon = document.querySelector('.theme-toggle i');
+    if (themeIcon) {
+        if (isLightMode) {
+            themeIcon.className = 'fas fa-moon';
+        } else {
+            themeIcon.className = 'fas fa-sun';
+        }
     }
-
-    history.forEach((key) => {
-        const btn = document.createElement('button');
-        btn.className = 'history-item';
-        const data = getWeatherData(key);
-        btn.textContent = data ? data.name : key;
-        btn.title = `Klik untuk melihat cuaca ${data ? data.name : key}`;
-        btn.addEventListener('click', () => {
-            // Panggil fungsi dari app.js via window
-            if (typeof window.handleHistoryClick === 'function') {
-                window.handleHistoryClick(key);
-            }
-        });
-        historyList.appendChild(btn);
-    });
-}
-
-// Tampilkan pesan error
-function showError(message) {
-    // Bisa ditambahkan toast/alert
-    alert(message);
 }
 
 // ============================================================
-//  EKSPOR UNTUK DIGUNAKAN DI FILE LAIN
+// FUNGSI LOAD THEME DARI LOCALSTORAGE
 // ============================================================
-// export { 
-//     renderWeather, 
-//     renderForecast, 
-//     renderHistory, 
-//     formatDate, 
-//     getDayName,
-//     showError 
-// };
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        const themeIcon = document.querySelector('.theme-toggle i');
+        if (themeIcon) {
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+}
+
+// ============================================================
+// FUNGSI LOADING
+// ============================================================
+
+function showLoading() {
+    const weatherCard = document.querySelector('.weather-card');
+    if (weatherCard) {
+        weatherCard.classList.add('loading');
+    }
+}
+
+function hideLoading() {
+    const weatherCard = document.querySelector('.weather-card');
+    if (weatherCard) {
+        weatherCard.classList.remove('loading');
+    }
+}
+
+// ============================================================
+// FUNGSI NOTIFIKASI
+// ============================================================
+
+function showNotification(message, type = 'info') {
+    // Cek apakah sudah ada notifikasi
+    let notification = document.querySelector('.notification');
+    
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'notification';
+        document.body.appendChild(notification);
+    }
+    
+    // Set style berdasarkan type
+    const colors = {
+        success: '#4ade80',
+        error: '#f87171',
+        info: '#60a5fa',
+        warning: '#fbbf24'
+    };
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type] || colors.info};
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 500;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        max-width: 400px;
+    `;
+    
+    notification.textContent = message;
+    
+    // Tampilkan notifikasi
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Sembunyikan setelah 3 detik
+    setTimeout(() => {
+        notification.style.transform = 'translateX(120%)';
+    }, 3000);
+}
+
+// ============================================================
+// FUNGSI SCROLL TO TOP
+// ============================================================
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// EKSPOR KE GLOBAL
+// ============================================================
+
+window.toggleTheme = toggleTheme;
+window.loadTheme = loadTheme;
+window.showLoading = showLoading;
+window.hideLoading = hideLoading;
+window.showNotification = showNotification;
+window.scrollToTop = scrollToTop;
+
+// Load tema saat halaman dimuat
+document.addEventListener('DOMContentLoaded', loadTheme);
+
+console.log('✅ UI.js loaded');
