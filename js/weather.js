@@ -1,5 +1,5 @@
 // ============================================================
-//  DATA CUACA DUMMY UNTUK DEMO (Tahap 1)
+// DATA CUACA LENGKAP & LOGIKA (WEATHER.JS)
 // ============================================================
 
 const weatherData = {
@@ -100,42 +100,17 @@ const weatherData = {
     }
 };
 
-// ============================================================
-//  FUNGSI WEATHER
-// ============================================================
-
-// Ambil data cuaca berdasarkan key kota
+// FUNGSI AMBIL DATA
 function getWeatherData(cityKey) {
     return weatherData[cityKey] || null;
 }
 
-// Cari kota (case insensitive)
+// FUNGSI CARI KOTA (DIPERBAIKI: Menggunakan .includes() agar pencarian fleksibel)
 function searchCity(query) {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-    
     const keys = Object.keys(weatherData);
-    // Cari berdasarkan key atau nama kota
-    const found = keys.find(k => 
-        k === q || 
-        weatherData[k].name.toLowerCase() === q
-    );
-    return found || null;
+    
+    // Mencari kecocokan langsung ATAU sebagian dari nama kota
+    return keys.find(k => k === q || weatherData[k].name.toLowerCase().includes(q)) || null;
 }
-
-// Ambil semua daftar kota
-function getAllCities() {
-    return Object.keys(weatherData);
-}
-
-// Ambil data forecast
-function getForecast(cityKey) {
-    const data = getWeatherData(cityKey);
-    return data ? data.forecast : null;
-}
-
-// ============================================================
-//  EKSPOR UNTUK DIGUNAKAN DI FILE LAIN
-// ============================================================
-// (Jika menggunakan module, bisa pakai export)
-// export { weatherData, getWeatherData, searchCity, getAllCities, getForecast };
