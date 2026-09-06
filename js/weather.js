@@ -97,20 +97,134 @@ const weatherData = {
             { day: 'Rab', icon: 'fa-cloud-sun', high: 27, low: 22, rain: '0.0 mm' },
             { day: 'Kam', icon: 'fa-cloud-rain', high: 26, low: 21, rain: '0.7 mm' }
         ]
+    },
+    'semarang': {
+        name: 'Semarang',
+        temp: 30,
+        condition: 'Cerah Berawan',
+        icon: 'fa-cloud-sun',
+        humidity: '75%',
+        wind: '11 km/j',
+        rainfall: '0.0 mm',
+        code: '802',
+        forecast: [
+            { day: 'Jum', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Sab', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' },
+            { day: 'Min', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
+            { day: 'Sen', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Sel', icon: 'fa-cloud-rain', high: 29, low: 25, rain: '1.5 mm' },
+            { day: 'Rab', icon: 'fa-cloud-sun', high: 30, low: 26, rain: '0.1 mm' },
+            { day: 'Kam', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' }
+        ]
+    },
+    'makassar': {
+        name: 'Makassar',
+        temp: 31,
+        condition: 'Cerah',
+        icon: 'fa-sun',
+        humidity: '68%',
+        wind: '14 km/j',
+        rainfall: '0.0 mm',
+        code: '800',
+        forecast: [
+            { day: 'Jum', icon: 'fa-sun', high: 32, low: 26, rain: '0.0 mm' },
+            { day: 'Sab', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
+            { day: 'Min', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Sen', icon: 'fa-cloud-rain', high: 30, low: 25, rain: '1.2 mm' },
+            { day: 'Sel', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Rab', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' },
+            { day: 'Kam', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' }
+        ]
+    },
+    'denpasar': {
+        name: 'Denpasar',
+        temp: 29,
+        condition: 'Cerah',
+        icon: 'fa-sun',
+        humidity: '72%',
+        wind: '9 km/j',
+        rainfall: '0.0 mm',
+        code: '800',
+        forecast: [
+            { day: 'Jum', icon: 'fa-sun', high: 30, low: 25, rain: '0.0 mm' },
+            { day: 'Sab', icon: 'fa-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Min', icon: 'fa-cloud-sun', high: 29, low: 24, rain: '0.0 mm' },
+            { day: 'Sen', icon: 'fa-cloud-sun', high: 30, low: 25, rain: '0.1 mm' },
+            { day: 'Sel', icon: 'fa-sun', high: 31, low: 26, rain: '0.0 mm' },
+            { day: 'Rab', icon: 'fa-cloud-rain', high: 28, low: 24, rain: '1.8 mm' },
+            { day: 'Kam', icon: 'fa-cloud-sun', high: 29, low: 25, rain: '0.0 mm' }
+        ]
     }
 };
 
+// ============================================================
 // FUNGSI AMBIL DATA
+// ============================================================
+
 function getWeatherData(cityKey) {
     return weatherData[cityKey] || null;
 }
 
-// FUNGSI CARI KOTA (DIPERBAIKI: Menggunakan .includes() agar pencarian fleksibel)
+// ============================================================
+// FUNGSI CARI KOTA (FLEKSIBEL)
+// ============================================================
+
 function searchCity(query) {
     const q = query.trim().toLowerCase();
     if (!q) return null;
+    
     const keys = Object.keys(weatherData);
     
-    // Mencari kecocokan langsung ATAU sebagian dari nama kota
-    return keys.find(k => k === q || weatherData[k].name.toLowerCase().includes(q)) || null;
+    // Cari kecocokan langsung ATAU sebagian dari nama kota
+    let exactMatch = null;
+    let partialMatch = null;
+    
+    for (const key of keys) {
+        const cityName = weatherData[key].name.toLowerCase();
+        
+        // Exact match (case insensitive)
+        if (key === q || cityName === q) {
+            exactMatch = key;
+            break;
+        }
+        
+        // Partial match (kota mengandung query)
+        if (cityName.includes(q)) {
+            if (!partialMatch) {
+                partialMatch = key;
+            }
+        }
+    }
+    
+    return exactMatch || partialMatch || null;
 }
+
+// ============================================================
+// FUNGSI GET ALL CITY NAMES
+// ============================================================
+
+function getAllCityNames() {
+    return Object.keys(weatherData).map(key => weatherData[key].name);
+}
+
+// ============================================================
+// FUNGSI GET TOTAL CITIES
+// ============================================================
+
+function getTotalCities() {
+    return Object.keys(weatherData).length;
+}
+
+// ============================================================
+// EKSPOR KE GLOBAL
+// ============================================================
+
+window.weatherData = weatherData;
+window.getWeatherData = getWeatherData;
+window.searchCity = searchCity;
+window.getAllCityNames = getAllCityNames;
+window.getTotalCities = getTotalCities;
+
+console.log('🌤️ Weather Data Loaded!');
+console.log(`📍 Total kota: ${getTotalCities()} kota`);
+console.log('📋 Daftar kota:', getAllCityNames().join(', '));
