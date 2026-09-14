@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WeatherApp - Prakiraan Cuaca</title>
-    <!-- Font Awesome Icons -->
+    <title>WeatherApp - Cuaca 38 Provinsi Indonesia</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <style>
+        .badge {
+            background: #fbbf24;
+            color: #141a24;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container" id="app">
@@ -14,6 +25,7 @@
         <nav class="navbar">
             <div class="logo">
                 <i class="fas fa-cloud-sun"></i> WeatherApp
+                <span class="badge">38 Ibukota</span>
             </div>
             <ul class="nav-links">
                 <li><a class="nav-link active" data-page="beranda" id="nav-beranda">Beranda</a></li>
@@ -26,24 +38,21 @@
         <div class="pages-container">
             <!-- HALAMAN BERANDA -->
             <div class="page-content active" id="page-beranda">
-                <!-- SEARCH -->
                 <div class="search-section">
                     <div class="search-wrapper">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Cari kota, misal: Jakarta" />
+                        <input type="text" class="search-input" id="searchInput" placeholder="Cari provinsi/ibukota, misal: Jakarta, Surabaya, Jayapura" />
                         <button class="btn-search" id="searchBtn"><i class="fas fa-search"></i> Cari</button>
                     </div>
                     <button class="btn-location" id="locationBtn"><i class="fas fa-location-dot"></i> Lokasi Saya</button>
                 </div>
 
-                <!-- WEATHER GRID -->
                 <div class="weather-grid">
-                    <!-- KIRI: Cuaca Saat Ini -->
                     <div class="weather-card" id="currentWeather">
                         <div class="city-name">
                             <span id="cityName">Jakarta</span>
                             <i class="fas fa-location-dot" style="font-size:16px;color:#60a5fa;"></i>
                         </div>
-                        <div class="city-date" id="currentDate">Kamis, 27 Agustus 2026</div>
+                        <div class="city-date" id="currentDate">-</div>
 
                         <div class="weather-main">
                             <div>
@@ -87,23 +96,17 @@
                         </div>
                     </div>
 
-                    <!-- KANAN: Forecast 7 Hari -->
                     <div class="forecast-section">
                         <div class="forecast-title">
                             <i class="fas fa-calendar-week"></i> Prakiraan 7 Hari
                         </div>
-                        <div class="forecast-list" id="forecastList">
-                            <!-- akan diisi JS -->
-                        </div>
+                        <div class="forecast-list" id="forecastList"></div>
                     </div>
                 </div>
 
-                <!-- HISTORY -->
                 <div class="history-section">
                     <div class="history-title"><i class="fas fa-clock-rotate-left"></i> Riwayat Pencarian</div>
-                    <div class="history-list" id="historyList">
-                        <!-- akan diisi JS -->
-                    </div>
+                    <div class="history-list" id="historyList"></div>
                 </div>
             </div>
 
@@ -118,21 +121,51 @@
                         <div class="about-card">
                             <i class="fas fa-cloud-sun-rain"></i>
                             <h3>Aplikasi Prakiraan Cuaca</h3>
-                            <p>WeatherApp adalah aplikasi prakiraan cuaca sederhana yang memberikan informasi cuaca terkini dan prakiraan 7 hari ke depan untuk berbagai kota di Indonesia.</p>
+                            <p>WeatherApp adalah aplikasi prakiraan cuaca yang menyajikan informasi cuaca terkini dan prakiraan 7 hari untuk 38 ibukota provinsi di Indonesia. Data diambil dari BMKG (Badan Meteorologi, Klimatologi, dan Geofisika).</p>
                         </div>
-                        
+
                         <div class="about-card">
                             <i class="fas fa-city"></i>
-                            <h3>Kota yang Tersedia</h3>
+                            <h3>38 Ibukota Provinsi</h3>
                             <div class="city-list">
+                                <span class="city-tag">Banda Aceh</span>
+                                <span class="city-tag">Medan</span>
+                                <span class="city-tag">Padang</span>
+                                <span class="city-tag">Pekanbaru</span>
+                                <span class="city-tag">Jambi</span>
+                                <span class="city-tag">Palembang</span>
+                                <span class="city-tag">Bengkulu</span>
+                                <span class="city-tag">Bandar Lampung</span>
+                                <span class="city-tag">Pangkal Pinang</span>
+                                <span class="city-tag">Tanjung Pinang</span>
                                 <span class="city-tag">Jakarta</span>
                                 <span class="city-tag">Bandung</span>
-                                <span class="city-tag">Surabaya</span>
-                                <span class="city-tag">Medan</span>
-                                <span class="city-tag">Yogyakarta</span>
                                 <span class="city-tag">Semarang</span>
-                                <span class="city-tag">Makassar</span>
+                                <span class="city-tag">Yogyakarta</span>
+                                <span class="city-tag">Surabaya</span>
+                                <span class="city-tag">Serang</span>
                                 <span class="city-tag">Denpasar</span>
+                                <span class="city-tag">Mataram</span>
+                                <span class="city-tag">Kupang</span>
+                                <span class="city-tag">Pontianak</span>
+                                <span class="city-tag">Palangka Raya</span>
+                                <span class="city-tag">Banjarmasin</span>
+                                <span class="city-tag">Samarinda</span>
+                                <span class="city-tag">Tanjung Selor</span>
+                                <span class="city-tag">Manado</span>
+                                <span class="city-tag">Palu</span>
+                                <span class="city-tag">Makassar</span>
+                                <span class="city-tag">Kendari</span>
+                                <span class="city-tag">Gorontalo</span>
+                                <span class="city-tag">Mamuju</span>
+                                <span class="city-tag">Ambon</span>
+                                <span class="city-tag">Sofifi</span>
+                                <span class="city-tag">Jayapura</span>
+                                <span class="city-tag">Manokwari</span>
+                                <span class="city-tag">Merauke</span>
+                                <span class="city-tag">Nabire</span>
+                                <span class="city-tag">Wamena</span>
+                                <span class="city-tag">Sorong</span>
                             </div>
                         </div>
 
@@ -144,6 +177,7 @@
                                 <li><i class="fab fa-css3-alt"></i> CSS3</li>
                                 <li><i class="fab fa-js"></i> JavaScript</li>
                                 <li><i class="fas fa-font-awesome"></i> Font Awesome Icons</li>
+                                <li><i class="fas fa-cloud"></i> BMKG API</li>
                             </ul>
                         </div>
 
@@ -151,9 +185,10 @@
                             <i class="fas fa-rocket"></i>
                             <h3>Fitur Utama</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-check-circle"></i> Informasi cuaca real-time</li>
+                                <li><i class="fas fa-check-circle"></i> Cuaca real-time dari BMKG</li>
+                                <li><i class="fas fa-check-circle"></i> 38 ibukota provinsi Indonesia</li>
                                 <li><i class="fas fa-check-circle"></i> Prakiraan 7 hari</li>
-                                <li><i class="fas fa-check-circle"></i> Pencarian kota</li>
+                                <li><i class="fas fa-check-circle"></i> Pencarian provinsi/ibukota</li>
                                 <li><i class="fas fa-check-circle"></i> Riwayat pencarian</li>
                                 <li><i class="fas fa-check-circle"></i> Mode tampilan gelap/terang</li>
                             </ul>
@@ -170,12 +205,10 @@
                         <h2>Hubungi Kami</h2>
                         <p>Ada pertanyaan atau saran? Silakan hubungi kami melalui salah satu media di bawah ini.</p>
                     </div>
-                    
+
                     <div class="contact-grid">
                         <div class="contact-card">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                             <h3>Email</h3>
                             <p>support@weatherapp.com</p>
                             <a href="mailto:support@weatherapp.com" class="contact-btn">
@@ -184,20 +217,16 @@
                         </div>
 
                         <div class="contact-card">
-                            <div class="contact-icon">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
+                            <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
                             <h3>WhatsApp</h3>
                             <p>+62 812-3456-7890</p>
-                            <a href="https://wa.me/6281234567890" target="_blank" class="contact-btn whatsapp">
+                            <a href="https://wa.me/6281299455012" target="_blank" class="contact-btn whatsapp">
                                 <i class="fab fa-whatsapp"></i> Chat WhatsApp
                             </a>
                         </div>
 
                         <div class="contact-card">
-                            <div class="contact-icon">
-                                <i class="fab fa-instagram"></i>
-                            </div>
+                            <div class="contact-icon"><i class="fab fa-instagram"></i></div>
                             <h3>Instagram</h3>
                             <p>@weatherapp_id</p>
                             <a href="https://instagram.com/weatherapp_id" target="_blank" class="contact-btn instagram">
@@ -206,9 +235,7 @@
                         </div>
 
                         <div class="contact-card">
-                            <div class="contact-icon">
-                                <i class="fab fa-github"></i>
-                            </div>
+                            <div class="contact-icon"><i class="fab fa-github"></i></div>
                             <h3>GitHub</h3>
                             <p>github.com/weatherapp</p>
                             <a href="https://github.com" target="_blank" class="contact-btn github">
@@ -217,7 +244,6 @@
                         </div>
                     </div>
 
-                    <!-- Form Kontak -->
                     <div class="contact-form-container">
                         <h3><i class="fas fa-pencil-alt"></i> Kirim Pesan</h3>
                         <form id="contactForm" class="contact-form">
@@ -243,6 +269,7 @@
         </div>
     </div>
 
+    <script src="js/provinces.js"></script>
     <script src="js/weather.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
