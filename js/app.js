@@ -1,15 +1,10 @@
 // ============================================================
-// WEATHER APP - APP.JS (APLIKASI UTAMA)
-// ============================================================
-
-// ============================================================
-// ELEMEN DOM
+// APP.JS - WEATHER APP 38 IBUKOTA PROVINSI
 // ============================================================
 
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const locationBtn = document.getElementById('locationBtn');
-
 const cityName = document.getElementById('cityName');
 const weatherTemp = document.getElementById('weatherTemp');
 const weatherCondition = document.getElementById('weatherCondition');
@@ -23,7 +18,7 @@ const historyList = document.getElementById('historyList');
 const currentDate = document.getElementById('currentDate');
 
 // ============================================================
-// NAVIGASI HALAMAN
+// NAVIGASI
 // ============================================================
 
 const navLinks = document.querySelectorAll('.nav-link');
@@ -34,179 +29,174 @@ const pages = {
 };
 
 function navigateTo(page) {
-    // Sembunyikan semua halaman
-    Object.keys(pages).forEach(key => {
-        if (pages[key]) {
-            pages[key].classList.remove('active');
-        }
-    });
-    
-    // Tampilkan halaman yang dipilih
-    if (pages[page]) {
-        pages[page].classList.add('active');
-    }
-    
-    // Update active class pada nav
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.page === page) {
-            link.classList.add('active');
-        }
+    Object.keys(pages).forEach(k => pages[k]?.classList.remove('active'));
+    pages[page]?.classList.add('active');
+    navLinks.forEach(l => {
+        l.classList.toggle('active', l.dataset.page === page);
     });
 }
 
-// Event listener untuk navigasi
 navLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', e => {
         e.preventDefault();
-        const page = this.dataset.page;
-        if (page) {
-            navigateTo(page);
-        }
+        if (link.dataset.page) navigateTo(link.dataset.page);
     });
 });
 
 // ============================================================
-// HELPER FUNCTIONS
+// HELPER
 // ============================================================
-
-function getDayName(date) {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return days[date.getDay()];
-}
 
 function formatDate(date) {
-    const d = new Date(date);
-    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    return `${getDayName(d)}, ${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function getWeatherIcon(condition) {
-    const iconMap = {
-        'Cerah': 'fa-sun',
-        'Berawan': 'fa-cloud',
-        'Cerah Berawan': 'fa-cloud-sun',
-        'Hujan Ringan': 'fa-cloud-rain',
-        'Hujan': 'fa-cloud-showers-heavy',
-        'Badai': 'fa-bolt',
-        'Kabut': 'fa-smog'
-    };
-    return iconMap[condition] || 'fa-cloud-sun';
+    const d = new Date(date);
+    return `${days[d.getDay()]}, ${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 // ============================================================
-// FUNGSI TAMPILKAN CUACA UTAMA
+// TAMPILKAN CUACA
 // ============================================================
 
-function showWeather(cityKey) {
-    const data = getWeatherData(cityKey);
-
+async function showWeather(provinceKey) {
+    const data = getProvinceData(provinceKey);
     if (!data) {
-        showNotification('Kota tidak ditemukan!', 'error');
+        showNotification('Provinsi tidak ditemukan!', 'error');
         return;
     }
 
-    console.log('Menampilkan cuaca untuk:', data.name);
-
-    // Update kota & tanggal
-    if (cityName) cityName.textContent = data.name;
+    showLoading();
+    if (cityName) cityName.textContent = `${data.capital}, ${data.name}`;
     if (currentDate) currentDate.textContent = formatDate(new Date());
 
-    // Update ikon & kondisi
-    const iconClass = getWeatherIcon(data.condition);
-    if (weatherIconBig) {
-        weatherIconBig.innerHTML = `<i class="fas ${iconClass}"></i>`;
+    try {
+        let parsed = null;
+
+        if (data.adm4) {
+            try {
+                const raw = await fetchBMKGWeather(data.adm4);
+                parsed = parseBMKGData(raw);
+            } catch (err) {
+                console.warn('⚠️ BMKG gagal:', err);
+            }
+        }
+
+        if (parsed?.current) {
+            const c = parsed.current;
+            if (weatherTemp) weatherTemp.innerHTML = `${c.temp}<sup>°C</sup>`;
+            if (weatherCondition) weatherCondition.textContent = c.condition;
+            if (humidity) humidity.textContent = `${c.humidity}%`;
+            if (windSpeed) windSpeed.textContent = c.wind;
+            if (rainfall) rainfall.textContent = c.rainfall;
+            if (weatherCode) weatherCode.textContent = c.code;
+            if (weatherIconBig) weatherIconBig.innerHTML = `<i class="fas ${c.icon}"></i>`;
+
+            if (parsed.forecast?.length) renderForecast(parsed.forecast);
+            showNotification(`✅ Cuaca ${data.capital} dari BMKG`, 'success');
+        } else {
+            useFallback(data);
+            showNotification('⚠️ Menggunakan data perkiraan', 'warning');
+        }
+    } catch (err) {
+        console.error(err);
+        useFallback(data);
+        showNotification('⚠️ Gagal memuat BMKG', 'warning');
+    } finally {
+        hideLoading();
     }
-    if (weatherCondition) weatherCondition.textContent = data.condition;
 
-    // Update suhu
-    if (weatherTemp) weatherTemp.innerHTML = `${data.temp}<sup>°C</sup>`;
-
-    // Update detail cuaca
-    if (humidity) humidity.textContent = data.humidity;
-    if (windSpeed) windSpeed.textContent = data.wind;
-    if (rainfall) rainfall.textContent = data.rainfall;
-    if (weatherCode) weatherCode.textContent = data.code;
-
-    // Update prakiraan 7 hari
-    if (data.forecast && forecastList) {
-        renderForecast(data.forecast);
-    }
-
-    // Update riwayat pencarian
-    updateHistory(cityKey);
-
-    console.log('✅ Cuaca ditampilkan:', data.name);
+    updateHistory(provinceKey);
 }
 
 // ============================================================
-// FUNGSI TAMPILKAN PRAKIRAAN 7 HARI
+// FALLBACK
+// ============================================================
+
+function useFallback(provinceData) {
+    const temp = 26 + Math.floor(Math.random() * 8);
+    const conditions = ['Cerah', 'Berawan', 'Cerah Berawan', 'Hujan Ringan'];
+    const cond = conditions[Math.floor(Math.random() * conditions.length)];
+    const icon = getWeatherIconFromBMKG(cond);
+
+    if (weatherTemp) weatherTemp.innerHTML = `${temp}<sup>°C</sup>`;
+    if (weatherCondition) weatherCondition.textContent = cond;
+    if (humidity) humidity.textContent = `${70 + Math.floor(Math.random() * 20)}%`;
+    if (windSpeed) windSpeed.textContent = `${5 + Math.floor(Math.random() * 15)} km/j`;
+    if (rainfall) rainfall.textContent = `${(Math.random() * 5).toFixed(1)} mm`;
+    if (weatherCode) weatherCode.textContent = '801';
+    if (weatherIconBig) weatherIconBig.innerHTML = `<i class="fas ${icon}"></i>`;
+
+    const forecast = [];
+    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        forecast.push({
+            day: dayNames[d.getDay()],
+            icon: conditions[Math.floor(Math.random() * conditions.length)],
+            high: temp + Math.floor(Math.random() * 4),
+            low: temp - Math.floor(Math.random() * 5),
+            rain: `${(Math.random() * 5).toFixed(1)} mm`
+        });
+    }
+    renderForecast(forecast);
+}
+
+// ============================================================
+// FORECAST
 // ============================================================
 
 function renderForecast(forecastData) {
     if (!forecastList) return;
-
     forecastList.innerHTML = '';
 
     forecastData.forEach(item => {
-        const itemHTML = `
+        const icon = getWeatherIconFromBMKG(item.icon) || 'fa-cloud-sun';
+        forecastList.insertAdjacentHTML('beforeend', `
             <div class="forecast-item">
                 <span class="forecast-day">${item.day}</span>
-                <span class="forecast-icon"><i class="fas ${item.icon}"></i></span>
+                <span class="forecast-icon"><i class="fas ${icon}"></i></span>
                 <div class="forecast-temps">
                     <span class="forecast-temp-high">${item.high}°</span>
                     <span class="forecast-temp-low">${item.low}°</span>
                 </div>
                 <span class="forecast-rain"><i class="fas fa-droplet"></i> ${item.rain}</span>
             </div>
-        `;
-        forecastList.insertAdjacentHTML('beforeend', itemHTML);
+        `);
     });
 }
 
 // ============================================================
-// FUNGSI RIWAYAT PENCARIAN
+// RIWAYAT
 // ============================================================
 
 let searchHistory = [];
 
-function updateHistory(cityKey) {
-    const data = getWeatherData(cityKey);
-    if (!data) return;
-
-    // Hapus duplikat
-    searchHistory = searchHistory.filter(key => key !== cityKey);
-    searchHistory.unshift(cityKey);
-
-    // Batasi riwayat maksimal 5
-    if (searchHistory.length > 5) {
-        searchHistory.pop();
-    }
-
+function updateHistory(key) {
+    searchHistory = searchHistory.filter(k => k !== key);
+    searchHistory.unshift(key);
+    if (searchHistory.length > 5) searchHistory.pop();
     renderHistory();
 }
 
 function renderHistory() {
     if (!historyList) return;
-
     historyList.innerHTML = '';
-    
+
     if (searchHistory.length === 0) {
-        historyList.innerHTML = '<span class="text-muted">Belum ada riwayat pencarian</span>';
+        historyList.innerHTML = '<span class="text-muted">Belum ada riwayat</span>';
         return;
     }
 
-    searchHistory.forEach((key) => {
+    searchHistory.forEach(key => {
+        const data = getProvinceData(key);
         const btn = document.createElement('button');
         btn.className = 'history-item';
-        const data = getWeatherData(key);
-        btn.textContent = data ? data.name : key;
-        btn.title = `Klik untuk melihat cuaca ${data ? data.name : key}`;
-        btn.addEventListener('click', function() {
+        btn.textContent = data ? data.capital : key;
+        btn.addEventListener('click', () => {
             showWeather(key);
-            if (searchInput) searchInput.value = data ? data.name : key;
-            // Kembali ke halaman beranda saat klik riwayat
+            if (searchInput) searchInput.value = data?.capital || key;
             navigateTo('beranda');
         });
         historyList.appendChild(btn);
@@ -214,31 +204,24 @@ function renderHistory() {
 }
 
 // ============================================================
-// FUNGSI PENCARIAN
+// PENCARIAN
 // ============================================================
 
 function handleSearch() {
     const query = searchInput.value.trim();
-
     if (!query) {
-        showNotification('Masukkan nama kota!', 'warning');
+        showNotification('Masukkan nama provinsi/kota!', 'warning');
         return;
     }
 
-    const cityKey = searchCity(query);
-
-    if (cityKey) {
-        const data = getWeatherData(cityKey);
-        showWeather(cityKey);
-        if (searchInput) searchInput.value = data.name;
-        // Pastikan di halaman beranda
+    const key = searchProvince(query);
+    if (key) {
+        const data = getProvinceData(key);
+        showWeather(key);
+        if (searchInput) searchInput.value = data.capital;
         navigateTo('beranda');
-        showNotification(`Menampilkan cuaca ${data.name}`, 'success');
     } else {
-        showNotification(
-            'Kota tidak ditemukan!\nCoba: Jakarta, Bandung, Surabaya, Medan, Yogyakarta',
-            'error'
-        );
+        showNotification(`"${query}" tidak ditemukan. Coba: Jakarta, Bandung, Surabaya, Medan, Makassar`, 'error');
     }
 }
 
@@ -247,61 +230,39 @@ function handleSearch() {
 // ============================================================
 
 const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('contactName').value.trim();
-        const email = document.getElementById('contactEmail').value.trim();
-        const message = document.getElementById('contactMessage').value.trim();
-        
-        if (name && email && message) {
-            // Simulasi pengiriman pesan
-            showNotification('✅ Pesan berhasil dikirim! Terima kasih!', 'success');
-            
-            // Reset form
-            this.reset();
-        } else {
-            showNotification('⚠️ Mohon isi semua bidang!', 'warning');
-        }
-    });
-}
+contactForm?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const n = document.getElementById('contactName').value.trim();
+    const em = document.getElementById('contactEmail').value.trim();
+    const msg = document.getElementById('contactMessage').value.trim();
+    if (n && em && msg) {
+        showNotification('✅ Pesan terkirim!', 'success');
+        this.reset();
+    } else {
+        showNotification('⚠️ Isi semua bidang!', 'warning');
+    }
+});
 
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
 
-// Tombol Cari
-if (searchBtn) {
-    searchBtn.addEventListener('click', handleSearch);
-}
-
-// Enter pada Input
-if (searchInput) {
-    searchInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            handleSearch();
-        }
-    });
-}
-
-// Tombol Lokasi Saya
-if (locationBtn) {
-    locationBtn.addEventListener('click', function() {
-        showWeather('jakarta');
-        if (searchInput) searchInput.value = 'Jakarta';
-        navigateTo('beranda');
-        showNotification('📍 Menampilkan lokasi Jakarta', 'info');
-    });
-}
+searchBtn?.addEventListener('click', handleSearch);
+searchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSearch();
+});
+locationBtn?.addEventListener('click', () => {
+    showWeather('dki-jakarta');
+    if (searchInput) searchInput.value = 'Jakarta';
+    navigateTo('beranda');
+});
 
 // ============================================================
-// TAMPILKAN DEFAULT
+// INIT
 // ============================================================
 
-// Tampilkan halaman beranda dan cuaca Jakarta
-navigateTo('beranda');
-showWeather('jakarta');
-
-console.log('🚀 WeatherApp siap digunakan!');
-console.log('💡 Tips: Coba cari kota seperti "bandung" atau "surabaya"');
+document.addEventListener('DOMContentLoaded', () => {
+    navigateTo('beranda');
+    showWeather('dki-jakarta');
+    console.log('🚀 WeatherApp 38 ibukota provinsi siap!');
+});
