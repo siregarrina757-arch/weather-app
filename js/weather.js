@@ -1,230 +1,128 @@
 // ============================================================
-// DATA CUACA LENGKAP & LOGIKA (WEATHER.JS)
+// WEATHER.JS - INTEGRASI BMKG API
 // ============================================================
 
-const weatherData = {
-    'jakarta': {
-        name: 'Jakarta',
-        temp: 28,
-        condition: 'Berawan',
-        icon: 'fa-cloud-sun',
-        humidity: '78%',
-        wind: '12 km/j',
-        rainfall: '0.5 mm',
-        code: '801',
-        forecast: [
-            { day: 'Jum', icon: 'fa-cloud-sun', high: 29, low: 24, rain: '0.2 mm' },
-            { day: 'Sab', icon: 'fa-cloud-rain', high: 27, low: 23, rain: '2.1 mm' },
-            { day: 'Min', icon: 'fa-cloud-sun', high: 28, low: 24, rain: '0.0 mm' },
-            { day: 'Sen', icon: 'fa-sun', high: 31, low: 25, rain: '0.0 mm' },
-            { day: 'Sel', icon: 'fa-cloud-sun', high: 30, low: 25, rain: '0.1 mm' },
-            { day: 'Rab', icon: 'fa-cloud-rain', high: 26, low: 22, rain: '3.5 mm' },
-            { day: 'Kam', icon: 'fa-cloud-sun', high: 28, low: 23, rain: '0.8 mm' }
-        ]
-    },
-    'bandung': {
-        name: 'Bandung',
-        temp: 22,
-        condition: 'Cerah Berawan',
-        icon: 'fa-cloud-sun',
-        humidity: '72%',
-        wind: '8 km/j',
-        rainfall: '0.0 mm',
-        code: '802',
-        forecast: [
-            { day: 'Jum', icon: 'fa-sun', high: 24, low: 18, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-cloud-sun', high: 23, low: 17, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-rain', high: 21, low: 17, rain: '1.2 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 23, low: 18, rain: '0.1 mm' },
-            { day: 'Sel', icon: 'fa-sun', high: 25, low: 19, rain: '0.0 mm' },
-            { day: 'Rab', icon: 'fa-cloud-sun', high: 24, low: 18, rain: '0.0 mm' },
-            { day: 'Kam', icon: 'fa-cloud-rain', high: 22, low: 17, rain: '0.9 mm' }
-        ]
-    },
-    'surabaya': {
-        name: 'Surabaya',
-        temp: 32,
-        condition: 'Cerah',
-        icon: 'fa-sun',
-        humidity: '65%',
-        wind: '15 km/j',
-        rainfall: '0.0 mm',
-        code: '800',
-        forecast: [
-            { day: 'Jum', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-sun', high: 34, low: 28, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-sun', high: 32, low: 27, rain: '0.0 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.1 mm' },
-            { day: 'Sel', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
-            { day: 'Rab', icon: 'fa-cloud-rain', high: 30, low: 26, rain: '2.3 mm' },
-            { day: 'Kam', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' }
-        ]
-    },
-    'medan': {
-        name: 'Medan',
-        temp: 27,
-        condition: 'Hujan Ringan',
-        icon: 'fa-cloud-rain',
-        humidity: '84%',
-        wind: '6 km/j',
-        rainfall: '4.2 mm',
-        code: '500',
-        forecast: [
-            { day: 'Jum', icon: 'fa-cloud-rain', high: 28, low: 23, rain: '3.1 mm' },
-            { day: 'Sab', icon: 'fa-cloud-rain', high: 27, low: 23, rain: '5.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-sun', high: 29, low: 24, rain: '0.2 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 30, low: 24, rain: '0.0 mm' },
-            { day: 'Sel', icon: 'fa-cloud-rain', high: 28, low: 23, rain: '1.8 mm' },
-            { day: 'Rab', icon: 'fa-cloud-rain', high: 26, low: 22, rain: '6.2 mm' },
-            { day: 'Kam', icon: 'fa-cloud-sun', high: 29, low: 24, rain: '0.1 mm' }
-        ]
-    },
-    'yogyakarta': {
-        name: 'Yogyakarta',
-        temp: 26,
-        condition: 'Cerah',
-        icon: 'fa-sun',
-        humidity: '70%',
-        wind: '10 km/j',
-        rainfall: '0.0 mm',
-        code: '800',
-        forecast: [
-            { day: 'Jum', icon: 'fa-sun', high: 27, low: 22, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-cloud-sun', high: 26, low: 21, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-rain', high: 25, low: 21, rain: '1.5 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 27, low: 22, rain: '0.1 mm' },
-            { day: 'Sel', icon: 'fa-sun', high: 28, low: 23, rain: '0.0 mm' },
-            { day: 'Rab', icon: 'fa-cloud-sun', high: 27, low: 22, rain: '0.0 mm' },
-            { day: 'Kam', icon: 'fa-cloud-rain', high: 26, low: 21, rain: '0.7 mm' }
-        ]
-    },
-    'semarang': {
-        name: 'Semarang',
-        temp: 30,
-        condition: 'Cerah Berawan',
-        icon: 'fa-cloud-sun',
-        humidity: '75%',
-        wind: '11 km/j',
-        rainfall: '0.0 mm',
-        code: '802',
-        forecast: [
-            { day: 'Jum', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Sel', icon: 'fa-cloud-rain', high: 29, low: 25, rain: '1.5 mm' },
-            { day: 'Rab', icon: 'fa-cloud-sun', high: 30, low: 26, rain: '0.1 mm' },
-            { day: 'Kam', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' }
-        ]
-    },
-    'makassar': {
-        name: 'Makassar',
-        temp: 31,
-        condition: 'Cerah',
-        icon: 'fa-sun',
-        humidity: '68%',
-        wind: '14 km/j',
-        rainfall: '0.0 mm',
-        code: '800',
-        forecast: [
-            { day: 'Jum', icon: 'fa-sun', high: 32, low: 26, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-sun', high: 33, low: 27, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Sen', icon: 'fa-cloud-rain', high: 30, low: 25, rain: '1.2 mm' },
-            { day: 'Sel', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Rab', icon: 'fa-sun', high: 32, low: 27, rain: '0.0 mm' },
-            { day: 'Kam', icon: 'fa-cloud-sun', high: 31, low: 26, rain: '0.0 mm' }
-        ]
-    },
-    'denpasar': {
-        name: 'Denpasar',
-        temp: 29,
-        condition: 'Cerah',
-        icon: 'fa-sun',
-        humidity: '72%',
-        wind: '9 km/j',
-        rainfall: '0.0 mm',
-        code: '800',
-        forecast: [
-            { day: 'Jum', icon: 'fa-sun', high: 30, low: 25, rain: '0.0 mm' },
-            { day: 'Sab', icon: 'fa-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Min', icon: 'fa-cloud-sun', high: 29, low: 24, rain: '0.0 mm' },
-            { day: 'Sen', icon: 'fa-cloud-sun', high: 30, low: 25, rain: '0.1 mm' },
-            { day: 'Sel', icon: 'fa-sun', high: 31, low: 26, rain: '0.0 mm' },
-            { day: 'Rab', icon: 'fa-cloud-rain', high: 28, low: 24, rain: '1.8 mm' },
-            { day: 'Kam', icon: 'fa-cloud-sun', high: 29, low: 25, rain: '0.0 mm' }
-        ]
-    }
-};
+const BMKG_API_URL = 'https://api.bmkg.go.id/publik/prakiraan-cuaca';
+const weatherCache = new Map();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 menit
 
 // ============================================================
-// FUNGSI AMBIL DATA
+// AMBIL DATA BMKG
 // ============================================================
 
-function getWeatherData(cityKey) {
-    return weatherData[cityKey] || null;
-}
-
-// ============================================================
-// FUNGSI CARI KOTA (FLEKSIBEL)
-// ============================================================
-
-function searchCity(query) {
-    const q = query.trim().toLowerCase();
-    if (!q) return null;
-    
-    const keys = Object.keys(weatherData);
-    
-    // Cari kecocokan langsung ATAU sebagian dari nama kota
-    let exactMatch = null;
-    let partialMatch = null;
-    
-    for (const key of keys) {
-        const cityName = weatherData[key].name.toLowerCase();
-        
-        // Exact match (case insensitive)
-        if (key === q || cityName === q) {
-            exactMatch = key;
-            break;
-        }
-        
-        // Partial match (kota mengandung query)
-        if (cityName.includes(q)) {
-            if (!partialMatch) {
-                partialMatch = key;
-            }
+async function fetchBMKGWeather(adm4Code) {
+    // Cek cache
+    if (weatherCache.has(adm4Code)) {
+        const cached = weatherCache.get(adm4Code);
+        if (Date.now() - cached.timestamp < CACHE_DURATION) {
+            console.log('📦 Cache:', adm4Code);
+            return cached.data;
         }
     }
-    
-    return exactMatch || partialMatch || null;
+
+    const url = `${BMKG_API_URL}?adm4=${adm4Code}`;
+    console.log('🌐 Fetch BMKG:', url);
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    weatherCache.set(adm4Code, { data, timestamp: Date.now() });
+    console.log('✅ BMKG OK:', adm4Code);
+    return data;
 }
 
 // ============================================================
-// FUNGSI GET ALL CITY NAMES
+// PARSE DATA BMKG
 // ============================================================
 
-function getAllCityNames() {
-    return Object.keys(weatherData).map(key => weatherData[key].name);
+function parseBMKGData(bmkgData) {
+    if (!bmkgData?.data?.[0]) return null;
+
+    const lokasi = bmkgData.data[0].lokasi;
+    const cuaca = bmkgData.data[0].cuaca;
+    if (!Array.isArray(cuaca) || cuaca.length === 0) return null;
+
+    const timeSlots = cuaca[0];
+    const now = new Date();
+
+    // Cari slot terdekat
+    let closest = timeSlots[0];
+    let closestDiff = Infinity;
+    timeSlots.forEach(slot => {
+        const diff = Math.abs(new Date(slot.local_datetime) - now);
+        if (diff < closestDiff) {
+            closestDiff = diff;
+            closest = slot;
+        }
+    });
+
+    const current = {
+        temp: closest.t,
+        condition: closest.weather_desc,
+        icon: getWeatherIconFromBMKG(closest.weather_desc),
+        humidity: closest.hu,
+        wind: `${closest.ws} km/j`,
+        rainfall: closest.tp ? `${closest.tp} mm` : '0 mm',
+        code: closest.weather
+    };
+
+    // Group per hari
+    const dailyMap = new Map();
+    timeSlots.forEach(slot => {
+        const dayKey = new Date(slot.local_datetime).toISOString().split('T')[0];
+        if (!dailyMap.has(dayKey)) dailyMap.set(dayKey, []);
+        dailyMap.get(dayKey).push(slot);
+    });
+
+    // Ambil 7 hari
+    const forecast = [];
+    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    let count = 0;
+
+    for (const [dateKey, slots] of dailyMap) {
+        if (count >= 7) break;
+
+        const temps = slots.map(s => s.t);
+        const rains = slots.map(s => parseFloat(s.tp) || 0);
+        const noon = slots.find(s => {
+            const h = new Date(s.local_datetime).getHours();
+            return h >= 12 && h <= 15;
+        }) || slots[Math.floor(slots.length / 2)];
+
+        const date = new Date(dateKey);
+        forecast.push({
+            day: dayNames[date.getDay()],
+            icon: getWeatherIconFromBMKG(noon.weather_desc),
+            high: Math.max(...temps),
+            low: Math.min(...temps),
+            rain: `${Math.max(...rains).toFixed(1)} mm`
+        });
+        count++;
+    }
+
+    return { current, forecast, location: lokasi };
 }
 
 // ============================================================
-// FUNGSI GET TOTAL CITIES
+// KONVERSI ICON BMKG → FONT AWESOME
 // ============================================================
 
-function getTotalCities() {
-    return Object.keys(weatherData).length;
+function getWeatherIconFromBMKG(desc) {
+    if (!desc) return 'fa-cloud-sun';
+    const d = desc.toLowerCase();
+    if (d.includes('petir') || d.includes('badai')) return 'fa-bolt';
+    if (d.includes('hujan lebat')) return 'fa-cloud-showers-heavy';
+    if (d.includes('hujan')) return 'fa-cloud-rain';
+    if (d.includes('cerah berawan')) return 'fa-cloud-sun';
+    if (d.includes('berawan')) return 'fa-cloud';
+    if (d.includes('cerah')) return 'fa-sun';
+    if (d.includes('kabut') || d.includes('asap')) return 'fa-smog';
+    return 'fa-cloud-sun';
 }
 
-// ============================================================
-// EKSPOR KE GLOBAL
-// ============================================================
+window.fetchBMKGWeather = fetchBMKGWeather;
+window.parseBMKGData = parseBMKGData;
+window.getWeatherIconFromBMKG = getWeatherIconFromBMKG;
 
-window.weatherData = weatherData;
-window.getWeatherData = getWeatherData;
-window.searchCity = searchCity;
-window.getAllCityNames = getAllCityNames;
-window.getTotalCities = getTotalCities;
-
-console.log('🌤️ Weather Data Loaded!');
-console.log(`📍 Total kota: ${getTotalCities()} kota`);
-console.log('📋 Daftar kota:', getAllCityNames().join(', '));
+console.log('🌤️ Weather module loaded!');
