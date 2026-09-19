@@ -1,5 +1,5 @@
 // ============================================================
-// APP.JS - WEATHER APP 38 IBUKOTA PROVINSI
+// APP.JS - WEATHER APP 38 IBUKOTA PROVINSI (REAL-TIME)
 // ============================================================
 
 const searchInput = document.getElementById('searchInput');
@@ -16,6 +16,10 @@ const weatherIconBig = document.getElementById('weatherIconBig');
 const forecastList = document.getElementById('forecastList');
 const historyList = document.getElementById('historyList');
 const currentDate = document.getElementById('currentDate');
+
+// Kota yang sedang ditampilkan (untuk auto-refresh)
+let currentProvinceKey = 'dki-jakarta';
+let autoRefreshTimer = null;
 
 // ============================================================
 // NAVIGASI
@@ -56,7 +60,7 @@ function formatDate(date) {
 }
 
 // ============================================================
-// TAMPILKAN CUACA
+// TAMPILKAN CUACA (REAL-TIME)
 // ============================================================
 
 async function showWeather(provinceKey) {
@@ -65,6 +69,9 @@ async function showWeather(provinceKey) {
         showNotification('Provinsi tidak ditemukan!', 'error');
         return;
     }
+
+    // Simpan kota yang sedang ditampilkan
+    currentProvinceKey = provinceKey;
 
     showLoading();
     if (cityName) cityName.textContent = `${data.capital}, ${data.name}`;
@@ -92,6 +99,9 @@ async function showWeather(provinceKey) {
             if (weatherCode) weatherCode.textContent = c.code;
             if (weatherIconBig) weatherIconBig.innerHTML = `<i class="fas ${c.icon}"></i>`;
 
+            // Tampilkan info jam update
+            updateTimestamp(c.updatedAt, c.isToday);
+
             if (parsed.forecast?.length) renderForecast(parsed.forecast);
             showNotification(`✅ Cuaca ${data.capital} dari BMKG`, 'success');
         } else {
@@ -107,6 +117,54 @@ async function showWeather(provinceKey) {
     }
 
     updateHistory(provinceKey);
+}
+
+// ============================================================
+// INFO JAM UPDATE
+// ============================================================
+
+function updateTimestamp(timeStr, isToday) {
+    let info = document.getElementById('updateInfo');
+    if (!info) {
+        info = document.createElement('div');
+        info.id = 'updateInfo';
+        info.style.cssText = `
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        `;
+        // Sisipkan setelah kota/tanggal
+        const cityDate = document.getElementById('currentDate');
+        if (cityDate && cityDate.parentNode) {
+            cityDate.parentNode.insertBefore(info, cityDate.nextSibling);
+        }
+    }
+
+    const label = isToday ? 'Diperbarui pukul' : 'Data untuk pukul';
+    info.innerHTML = `
+        <i class="fas fa-clock" style="color: #4A90E2;"></i>
+        ${label} <strong>${timeStr}</strong> WIB
+    `;
+}
+
+// ============================================================
+// AUTO-REFRESH (SETIAP 10 MENIT)
+// ============================================================
+
+function startAutoRefresh() {
+    // Hentikan timer lama
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+
+    // Refresh setiap 10 menit
+    autoRefreshTimer = setInterval(() => {
+        console.log('🔄 Auto-refresh cuaca...');
+        showWeather(currentProvinceKey);
+    }, 10 * 60 * 1000);
+
+    console.log('⏰ Auto-refresh aktif (10 menit)');
 }
 
 // ============================================================
@@ -126,6 +184,11 @@ function useFallback(provinceData) {
     if (rainfall) rainfall.textContent = `${(Math.random() * 5).toFixed(1)} mm`;
     if (weatherCode) weatherCode.textContent = '801';
     if (weatherIconBig) weatherIconBig.innerHTML = `<i class="fas ${icon}"></i>`;
+
+    // Info waktu untuk fallback
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    updateTimestamp(timeStr, true);
 
     const forecast = [];
     const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -152,7 +215,7 @@ function renderForecast(forecastData) {
     forecastList.innerHTML = '';
 
     forecastData.forEach(item => {
-        const icon = getWeatherIconFromBMKG(item.icon) || 'fa-cloud-sun';
+        const icon = item.icon?.startsWith('fa-') ? item.icon : getWeatherIconFromBMKG(item.icon);
         forecastList.insertAdjacentHTML('beforeend', `
             <div class="forecast-item">
                 <span class="forecast-day">${item.day}</span>
@@ -257,6 +320,14 @@ locationBtn?.addEventListener('click', () => {
     navigateTo('beranda');
 });
 
+// Refresh saat tab kembali aktif (user balik ke tab)
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        console.log('👁️ Tab aktif kembali, refresh data...');
+        showWeather(currentProvinceKey);
+    }
+});
+
 // ============================================================
 // INIT
 // ============================================================
@@ -264,5 +335,7 @@ locationBtn?.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     navigateTo('beranda');
     showWeather('dki-jakarta');
+    startAutoRefresh(); // Mulai auto-refresh
     console.log('🚀 WeatherApp 38 ibukota provinsi siap!');
+    console.log('⏰ Auto-refresh: setiap 10 menit');
 });
