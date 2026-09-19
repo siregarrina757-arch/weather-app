@@ -1,10 +1,21 @@
 // ============================================================
-// WEATHER.JS - INTEGRASI BMKG API
+// WEATHER.JS - INTEGRASI BMKG API (REAL-TIME)
 // ============================================================
 
 const BMKG_API_URL = 'https://api.bmkg.go.id/publik/prakiraan-cuaca';
 const weatherCache = new Map();
-const CACHE_DURATION = 30 * 60 * 1000; // 30 menit
+const CACHE_DURATION = 10 * 60 * 1000; // 10 menit (lebih fresh)
+
+// ============================================================
+// PARSE STRING TANGGAL BMKG
+// Format BMKG: "2026-09-19 12:00:00" → Date object
+// ============================================================
+
+function parseBMKGDate(str) {
+    if (!str) return new Date();
+    // Ganti spasi jadi 'T' agar bisa dibaca new Date()
+    return new Date(str.replace(' ', 'T'));
+}
 
 // ============================================================
 // AMBIL DATA BMKG
@@ -33,7 +44,7 @@ async function fetchBMKGWeather(adm4Code) {
 }
 
 // ============================================================
-// PARSE DATA BMKG
+// PARSE DATA BMKG (REAL-TIME)
 // ============================================================
 
 function parseBMKGData(bmkgData) {
@@ -46,16 +57,29 @@ function parseBMKGData(bmkgData) {
     const timeSlots = cuaca[0];
     const now = new Date();
 
-    // Cari slot terdekat
+    // Cari slot waktu terdekat dengan SEKARANG
     let closest = timeSlots[0];
     let closestDiff = Infinity;
+    let closestTime = parseBMKGDate(timeSlots[0].local_datetime);
+
     timeSlots.forEach(slot => {
-        const diff = Math.abs(new Date(slot.local_datetime) - now);
+        const slotTime = parseBMKGDate(slot.local_datetime);
+        const diff = Math.abs(slotTime - now);
         if (diff < closestDiff) {
             closestDiff = diff;
             closest = slot;
+            closestTime = slotTime;
         }
     });
+
+    // Format jam update (HH:MM)
+    const updateTime = closestTime.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    // Cek apakah slot terdekat masih "hari ini"
+    const isToday = closestTime.toDateString() === now.toDateString();
 
     const current = {
         temp: closest.t,
@@ -64,13 +88,17 @@ function parseBMKGData(bmkgData) {
         humidity: closest.hu,
         wind: `${closest.ws} km/j`,
         rainfall: closest.tp ? `${closest.tp} mm` : '0 mm',
-        code: closest.weather
+        code: closest.weather,
+        updatedAt: updateTime,
+        isToday: isToday,
+        slotTime: closestTime
     };
 
     // Group per hari
     const dailyMap = new Map();
     timeSlots.forEach(slot => {
-        const dayKey = new Date(slot.local_datetime).toISOString().split('T')[0];
+        const slotTime = parseBMKGDate(slot.local_datetime);
+        const dayKey = slotTime.toISOString().split('T')[0];
         if (!dailyMap.has(dayKey)) dailyMap.set(dayKey, []);
         dailyMap.get(dayKey).push(slot);
     });
@@ -86,7 +114,7 @@ function parseBMKGData(bmkgData) {
         const temps = slots.map(s => s.t);
         const rains = slots.map(s => parseFloat(s.tp) || 0);
         const noon = slots.find(s => {
-            const h = new Date(s.local_datetime).getHours();
+            const h = parseBMKGDate(s.local_datetime).getHours();
             return h >= 12 && h <= 15;
         }) || slots[Math.floor(slots.length / 2)];
 
@@ -121,8 +149,13 @@ function getWeatherIconFromBMKG(desc) {
     return 'fa-cloud-sun';
 }
 
+// ============================================================
+// EXPORT
+// ============================================================
+
 window.fetchBMKGWeather = fetchBMKGWeather;
 window.parseBMKGData = parseBMKGData;
+window.parseBMKGDate = parseBMKGDate;
 window.getWeatherIconFromBMKG = getWeatherIconFromBMKG;
 
-console.log('🌤️ Weather module loaded!');
+console.log('🌤️ Weather module loaded (real-time)!');
